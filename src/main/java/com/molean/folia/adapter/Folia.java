@@ -152,6 +152,11 @@ public class Folia {
             return entity.getScheduler().runDelayed(plugin, scheduledTask -> runnable.run(), null, Math.max(1, delay));
         }
 
+        public @Nullable ScheduledTask runTaskLaterGlobally(Plugin plugin, Runnable runnable, long delay) {
+            return Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> runnable.run(), delay);
+        }
+
+
         public @Nullable ScheduledTask runTaskLater(Plugin plugin, Location location, Runnable runnable, long delay) {
             return Bukkit.getRegionScheduler()
                     .runDelayed(plugin, location, scheduledTask -> runnable.run(), Math.max(1, delay));
