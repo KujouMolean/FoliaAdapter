@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sun.misc.Unsafe;
@@ -25,6 +26,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Folia {
+
+    private static boolean disable = false;
+
+    public static void disable() {
+        Folia.disable = true;
+    }
+
     private static Scheduler scheduler = new Scheduler();
 
     public static Scheduler getScheduler() {
@@ -33,36 +41,51 @@ public class Folia {
 
     public static class Scheduler {
         public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, Entity entity, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return entity.getScheduler()
                     .runAtFixedRate(
-                            plugin, scheduledTask -> runnable.run(), null, Math.max(1, delay), Math.max(1, period));
+                            getPlugin(), scheduledTask -> runnable.run(), null, Math.max(1, delay), Math.max(1, period));
         }
 
         public @NotNull ScheduledTask runTaskTimer(
                 Plugin plugin, Runnable runnable, Location location, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getRegionScheduler()
                     .runAtFixedRate(
-                            plugin, location, scheduledTask -> runnable.run(), Math.max(1, delay), Math.max(1, period));
+                            getPlugin(), location, scheduledTask -> runnable.run(), Math.max(1, delay), Math.max(1, period));
         }
 
         public ScheduledTask runTaskTimer(
                 Plugin plugin, Consumer<ScheduledTask> runnable, Entity entity, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return entity.getScheduler()
-                    .runAtFixedRate(plugin, runnable, null, Math.max(1, delay), Math.max(1, period));
+                    .runAtFixedRate(getPlugin(), runnable, null, Math.max(1, delay), Math.max(1, period));
         }
 
-        public @NotNull ScheduledTask runTaskTimer(
+        public ScheduledTask runTaskTimer(
                 Plugin plugin, Consumer<ScheduledTask> runnable, Location location, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getRegionScheduler()
-                    .runAtFixedRate(plugin, location, runnable, Math.max(1, delay), Math.max(1, period));
+                    .runAtFixedRate(getPlugin(), location, runnable, Math.max(1, delay), Math.max(1, period));
         }
 
 
-        public @NotNull ScheduledTask runTaskTimerAsynchronously(
+        public ScheduledTask runTaskTimerAsynchronously(
                 Plugin plugin, Runnable runnable, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getAsyncScheduler()
                     .runAtFixedRate(
-                            plugin,
+                            getPlugin(),
                             scheduledTask -> runnable.run(),
                             Math.max(1, delay) * 50L,
                             Math.max(1, period) * 50L,
@@ -70,66 +93,96 @@ public class Folia {
         }
 
 
-
-        public @NotNull ScheduledTask runTaskTimerGlobally(
+        public ScheduledTask runTaskTimerGlobally(
                 Plugin plugin, Runnable runnable, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getGlobalRegionScheduler()
                     .runAtFixedRate(
-                            plugin,
+                            getPlugin(),
                             scheduledTask -> runnable.run(),
                             delay, period
                     );
         }
 
         public @NotNull ScheduledTask runTaskLaterAsync(Plugin plugin, Runnable runnable, long delay) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getAsyncScheduler()
                     .runDelayed(
-                            plugin, scheduledTask -> runnable.run(), Math.max(1, delay) * 50L, TimeUnit.MILLISECONDS);
+                            getPlugin(), scheduledTask -> runnable.run(), Math.max(1, delay) * 50L, TimeUnit.MILLISECONDS);
         }
 
         public @Nullable ScheduledTask scheduleSyncDelayedTask(
                 Plugin plugin, Entity entity, Runnable runnable, long delay) {
+            if (disable) {
+                return null;
+            }
             return entity.getScheduler().runDelayed(plugin, scheduledTask -> runnable.run(), null, Math.max(1, delay));
         }
 
         public @Nullable ScheduledTask scheduleSyncDelayedTask(
                 Plugin plugin, Location location, Runnable runnable, long delay) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getRegionScheduler()
-                    .runDelayed(plugin, location, scheduledTask -> runnable.run(), Math.max(1, delay));
+                    .runDelayed(getPlugin(), location, scheduledTask -> runnable.run(), Math.max(1, delay));
         }
 
         public @Nullable ScheduledTask runTask(Plugin plugin, Entity entity, Runnable runnable) {
-            return entity.getScheduler().run(plugin, scheduledTask -> runnable.run(), null);
+            if (disable) {
+                return null;
+            }
+            return entity.getScheduler().run(getPlugin(), scheduledTask -> runnable.run(), null);
         }
 
         public @Nullable ScheduledTask runTask(Plugin plugin, SchedulerContext context, Runnable runnable) {
+            if (disable) {
+                return null;
+            }
             if (context instanceof SchedulerContext.EntitySchedulerContext entitySchedulerContext) {
-                return runTask(plugin, entitySchedulerContext.getEntity(), runnable);
+                return runTask(getPlugin(), entitySchedulerContext.getEntity(), runnable);
             }
             if (context instanceof SchedulerContext.LocationSchedulerContext locationSchedulerContext) {
-                return runTask(plugin, locationSchedulerContext.getWorld(), locationSchedulerContext.getChunkX(), locationSchedulerContext.getChunkZ(), runnable);
+                return runTask(getPlugin(), locationSchedulerContext.getWorld(), locationSchedulerContext.getChunkX(), locationSchedulerContext.getChunkZ(), runnable);
             }
             throw new RuntimeException("No enough context.");
         }
+
         public @Nullable ScheduledTask runTaskGlobally(Plugin plugin, Runnable runnable) {
-            return Bukkit.getGlobalRegionScheduler().run(plugin, scheduledTask -> runnable.run());
+            if (disable) {
+                return null;
+            }
+            return Bukkit.getGlobalRegionScheduler().run(getPlugin(), scheduledTask -> runnable.run());
         }
 
         public @Nullable ScheduledTask runTask(Plugin plugin, World world, int chunkX, int chunkZ, Runnable runnable) {
-            return Bukkit.getRegionScheduler().run(plugin, world, chunkX, chunkZ, scheduledTask -> runnable.run());
+            if (disable) {
+                return null;
+            }
+            return Bukkit.getRegionScheduler().run(getPlugin(), world, chunkX, chunkZ, scheduledTask -> runnable.run());
         }
 
         public @Nullable ScheduledTask runTask(Plugin plugin, Location location, Runnable runnable) {
-            return Bukkit.getRegionScheduler().run(plugin, location, scheduledTask -> runnable.run());
+            if (disable) {
+                return null;
+            }
+            return Bukkit.getRegionScheduler().run(getPlugin(), location, scheduledTask -> runnable.run());
         }
-        public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> callable, Pair<Entity, Location> right) {
 
+        public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> callable, Pair<Entity, Location> right) {
+            if (disable) {
+                return null;
+            }
             CompletableFuture<T> tCompletableFuture = new CompletableFuture<>();
             if (right.left() == null) {
                 if (right.right() == null) {
                     throw new RuntimeException("Context not enough!");
                 }
-                runTask(plugin, right.right(), () -> {
+                runTask(getPlugin(), right.right(), () -> {
                     try {
                         tCompletableFuture.complete(callable.call());
                     } catch (Exception e) {
@@ -137,7 +190,7 @@ public class Folia {
                     }
                 });
             } else {
-                runTask(plugin, right.left(), () -> {
+                runTask(getPlugin(), right.left(), () -> {
                     try {
                         tCompletableFuture.complete(callable.call());
                     } catch (Exception e) {
@@ -149,32 +202,51 @@ public class Folia {
         }
 
         public @Nullable ScheduledTask runTaskLater(Plugin plugin, Entity entity, Runnable runnable, long delay) {
-            return entity.getScheduler().runDelayed(plugin, scheduledTask -> runnable.run(), null, Math.max(1, delay));
+            if (disable) {
+                return null;
+            }
+            return entity.getScheduler().runDelayed(getPlugin(), scheduledTask -> runnable.run(), null, Math.max(1, delay));
         }
 
         public @Nullable ScheduledTask runTaskLaterGlobally(Plugin plugin, Runnable runnable, long delay) {
-            return Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> runnable.run(), delay);
+            if (disable) {
+                return null;
+            }
+            return Bukkit.getGlobalRegionScheduler().runDelayed(getPlugin(), task -> runnable.run(), delay);
         }
 
 
         public @Nullable ScheduledTask runTaskLater(Plugin plugin, Location location, Runnable runnable, long delay) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getRegionScheduler()
-                    .runDelayed(plugin, location, scheduledTask -> runnable.run(), Math.max(1, delay));
+                    .runDelayed(getPlugin(), location, scheduledTask -> runnable.run(), Math.max(1, delay));
         }
 
         public ScheduledTask runTaskAsynchronously(Plugin plugin, Runnable runnable) {
-            return Bukkit.getAsyncScheduler().runNow(plugin, scheduledTask -> runnable.run());
+
+            if (disable) {
+                return null;
+            }
+            return Bukkit.getAsyncScheduler().runNow(getPlugin(), scheduledTask -> runnable.run());
         }
 
         public ScheduledTask runTaskAsynchronously(Plugin plugin, Consumer<ScheduledTask> runnable) {
-            return Bukkit.getAsyncScheduler().runNow(plugin, runnable);
+            if (disable) {
+                return null;
+            }
+            return Bukkit.getAsyncScheduler().runNow(getPlugin(), runnable);
         }
 
         public @NotNull ScheduledTask runTaskTimerAsynchronously(
                 Plugin plugin, Consumer<ScheduledTask> consumer, long delay, long period) {
+            if (disable) {
+                return null;
+            }
             return Bukkit.getAsyncScheduler()
                     .runAtFixedRate(
-                            plugin,
+                            getPlugin(),
                             consumer,
                             Math.max(1, delay) * 50L,
                             Math.max(1, period) * 50L,
@@ -182,53 +254,61 @@ public class Folia {
         }
     }
 
-    private static Plugin plugin;
 
     private static Plugin getPlugin() {
-        return plugin;
+        return JavaPlugin.getPlugin(FoliaAdapter.class);
     }
 
     public static void setPlugin(Plugin plugin) {
-        Folia.plugin = plugin;
+
     }
 
     public static ScheduledTask runSync(Runnable runnable, Entity entity, long delay) {
-        if (getPlugin() == null || !getPlugin().isEnabled()) {
-            throw new RuntimeException();
+        if (disable) {
+            return null;
         }
         return getScheduler().runTaskLater(getPlugin(), entity, runnable, delay);
     }
 
     public static ScheduledTask runGlobally(Runnable runnable) {
-        if (getPlugin() == null || !getPlugin().isEnabled()) {
-            throw new RuntimeException();
+        if (disable) {
+            return null;
         }
         return getScheduler().runTaskGlobally(getPlugin(), runnable);
     }
 
-    public static ScheduledTask runGlobally(Runnable runnable,int delay) {
-        if (getPlugin() == null || !getPlugin().isEnabled()) {
-            throw new RuntimeException();
+    public static ScheduledTask runGlobally(Runnable runnable, int delay) {
+        if (disable) {
+            return null;
         }
         return getScheduler().runTaskLaterGlobally(getPlugin(), runnable, delay);
     }
 
     public static ScheduledTask runSync(Runnable runnable, Location location, long delay) {
-        if (getPlugin() == null || !getPlugin().isEnabled()) {
-            throw new RuntimeException();
+        if (disable) {
+            return null;
         }
         return getScheduler().runTaskLater(getPlugin(), location, runnable, delay);
     }
 
     public static ScheduledTask runSync(Runnable runnable, Entity entity) {
+        if (disable) {
+            return null;
+        }
         return runSync(runnable, entity, 1);
     }
 
     public static ScheduledTask runSync(Runnable runnable, Location location) {
+        if (disable) {
+            return null;
+        }
         return runSync(runnable, location, 1);
     }
 
     public static void runAtFirstTick(Plugin plugin, Runnable runnable) {
+        if (disable) {
+            return;
+        }
         Bukkit.getPluginManager()
                 .registerEvents(
                         new Listener() {
@@ -237,7 +317,7 @@ public class Folia {
                                 runnable.run();
                             }
                         },
-                        plugin);
+                        getPlugin());
     }
 
     private static boolean paper = false;
@@ -262,11 +342,11 @@ public class Folia {
                             !Class.forName("ca.spottedleaf.moonrise.common.util.TickThread")
                                     .isAssignableFrom(Thread.currentThread().getClass()));
                 } catch (NoSuchFieldException
-                        | IllegalAccessException
-                        | ClassNotFoundException
-                        | InstantiationException
-                        | NoSuchMethodException
-                        | InvocationTargetException ignored) {
+                         | IllegalAccessException
+                         | ClassNotFoundException
+                         | InstantiationException
+                         | NoSuchMethodException
+                         | InvocationTargetException ignored) {
                     // paper
                     paper = true;
                     return;
