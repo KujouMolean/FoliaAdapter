@@ -1,0 +1,5 @@
+name: FoliaAdapter
+version: 1.0-SNAPSHOT
+main: com.molean.folia.adapter.FoliaAdapter
+api-version: "1.13"
+folia-supported: true
