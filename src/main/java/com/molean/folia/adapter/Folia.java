@@ -194,14 +194,28 @@ public class Folia {
 
     public static ScheduledTask runSync(Runnable runnable, Entity entity, long delay) {
         if (getPlugin() == null || !getPlugin().isEnabled()) {
-            return null;
+            throw new RuntimeException();
         }
         return getScheduler().runTaskLater(getPlugin(), entity, runnable, delay);
     }
 
+    public static ScheduledTask runGlobally(Runnable runnable) {
+        if (getPlugin() == null || !getPlugin().isEnabled()) {
+            throw new RuntimeException();
+        }
+        return getScheduler().runTaskGlobally(getPlugin(), runnable);
+    }
+
+    public static ScheduledTask runGlobally(Runnable runnable,int delay) {
+        if (getPlugin() == null || !getPlugin().isEnabled()) {
+            throw new RuntimeException();
+        }
+        return getScheduler().runTaskLaterGlobally(getPlugin(), runnable, delay);
+    }
+
     public static ScheduledTask runSync(Runnable runnable, Location location, long delay) {
         if (getPlugin() == null || !getPlugin().isEnabled()) {
-            return null;
+            throw new RuntimeException();
         }
         return getScheduler().runTaskLater(getPlugin(), location, runnable, delay);
     }
