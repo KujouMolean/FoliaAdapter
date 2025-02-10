@@ -21,6 +21,18 @@ public abstract class FoliaRunnable {
                         TimeUnit.MILLISECONDS);
     }
 
+    public ScheduledTask runTask(Plugin plugin,Entity entity) {
+        return scheduledTask = Folia.getScheduler().runTask(plugin, entity, this::run);
+    }
+    
+
+    public ScheduledTask runTask(Plugin plugin,Location location) {
+        return scheduledTask = Folia.getScheduler().runTask(plugin, location, this::run);
+    }
+    public ScheduledTask runTaskGlobally(Plugin plugin) {
+        return scheduledTask = Folia.getScheduler().runTaskGlobally(plugin, this::run);
+    }
+
     public ScheduledTask runTaskAsynchronously(Plugin plugin) {
         return scheduledTask = Bukkit.getAsyncScheduler().runNow(plugin, scheduledTask1 -> run());
     }

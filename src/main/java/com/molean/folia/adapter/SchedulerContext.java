@@ -1,5 +1,6 @@
 package com.molean.folia.adapter;
 
+import it.unimi.dsi.fastutil.Pair;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -15,6 +16,10 @@ public class SchedulerContext {
 
         public Entity getEntity() {
             return entity;
+        }
+        @Override
+        public Pair<Entity, Location> toPair() {
+            return Pair.of(entity, null);
         }
     }
 
@@ -46,6 +51,11 @@ public class SchedulerContext {
             this.chunkX = location.getBlockX() >> 4;
             this.chunkZ = location.getBlockZ() >> 4;
         }
+
+        @Override
+        public Pair<Entity, Location> toPair() {
+            return Pair.of(null, new Location(world, chunkX << 4, 0, chunkZ << 4));
+        }
     }
 
     private SchedulerContext() {
@@ -57,6 +67,10 @@ public class SchedulerContext {
 
     public static SchedulerContext of(Entity entity) {
         return new EntitySchedulerContext(entity);
+    }
+
+    public Pair<Entity, Location> toPair() {
+        return Pair.of(null, null);
     }
 
 }
