@@ -10,11 +10,11 @@ import java.util.List;
 
 public class FoliaUtils {
 
-    public Iterable<Entity> getLocalEntities() {
+    public static Iterable<Entity> getLocalEntities() {
         return TickRegionScheduler.getCurrentRegionizedWorldData().getLocalEntities();
     }
 
-    public List<Player> getLocalPlayers() {
+    public static List<Player> getLocalPlayers() {
         return TickRegionScheduler.getCurrentRegionizedWorldData().getLocalPlayers().stream().map(ServerPlayer::getBukkitEntity).map(craftPlayer -> (Player) craftPlayer).toList();
     }
 }
