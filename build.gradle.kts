@@ -19,8 +19,6 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-//    implementation("io.papaermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-//    implementation("me.earthme.luminol:luminol-api:1.21.4-R0.1-SNAPSHOT")
     paperweight.foliaDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
 
