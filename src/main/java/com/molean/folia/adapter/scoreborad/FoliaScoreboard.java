@@ -22,7 +22,7 @@ public class FoliaScoreboard implements Scoreboard {
     final Map<DisplaySlot, FoliaObjective> displaySlotFoliaObjectiveMap = new HashMap<>();
     final Map<String, FoliaTeam> teamMap = new HashMap<>();
     final FoliaScoreboardManager manager;
-    final List<UUID> viewers = new ArrayList<>();
+    final Set<UUID> viewers = new HashSet<>();
 
 
     public FoliaScoreboard(FoliaScoreboardManager manager) {
@@ -230,14 +230,12 @@ public class FoliaScoreboard implements Scoreboard {
 
     public void removeTeam(FoliaTeam foliaTeam) {
         teamMap.remove(foliaTeam.name);
-        ClientboundSetPlayerTeamPacket clientboundSetPlayerTeamPacket = ScoreboardPacket.removeTeam(foliaTeam.name);
-        broadcast(clientboundSetPlayerTeamPacket);
+        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(foliaTeam::clearFor);
     }
 
     public void removeObjective(FoliaObjective foliaObjective) {
         foliaObjectiveMap.remove(foliaObjective.name);
-        ClientboundSetObjectivePacket clientboundSetObjectivePacket = ScoreboardPacket.removeObjective(foliaObjective.name);
-        broadcast(clientboundSetObjectivePacket);
+        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(foliaObjective::clearFor);
     }
 
     public void broadcast(Packet<?> packet) {

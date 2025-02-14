@@ -342,7 +342,9 @@ public class FoliaTeam implements Team {
     }
 
     public void clearFor(Player player) {
-        ClientboundSetPlayerTeamPacket team = ScoreboardPacket.removeTeam(name);
-        ScoreboardPacket.send(player, team);
+        if (scoreboard.viewers.contains(player.getUniqueId())) {
+            ClientboundSetPlayerTeamPacket team = ScoreboardPacket.removeTeam(name);
+            ScoreboardPacket.send(player, team);
+        }
     }
 }

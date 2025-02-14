@@ -181,7 +181,9 @@ public class FoliaObjective implements Objective {
     }
 
     public void clearFor(Player player) {
-        ClientboundSetObjectivePacket objective = ScoreboardPacket.removeObjective(name);
-        ScoreboardPacket.send(player, objective);
+        if (scoreboard.viewers.contains(player.getUniqueId())) {
+            ClientboundSetObjectivePacket objective = ScoreboardPacket.removeObjective(name);
+            ScoreboardPacket.send(player, objective);
+        }
     }
 }

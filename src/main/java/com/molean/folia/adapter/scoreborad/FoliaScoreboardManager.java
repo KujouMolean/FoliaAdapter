@@ -55,7 +55,8 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
     }
 
     public void setPlayerScoreboard(Player player, FoliaScoreboard foliaScoreboard) {
-        scoreboards.put(player.getUniqueId(), foliaScoreboard);
+        quit(player);
+        FoliaScoreboard put = scoreboards.put(player.getUniqueId(), foliaScoreboard);
         join(player, foliaScoreboard);
     }
 
