@@ -22,6 +22,7 @@ public class FoliaScore implements Score {
 
     public FoliaScore(String entry, FoliaObjective objective) {
         this.entry = entry;
+        this.customName = Component.text(entry);
         this.objective = objective;
     }
 
