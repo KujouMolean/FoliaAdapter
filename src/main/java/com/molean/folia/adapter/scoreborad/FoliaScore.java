@@ -105,6 +105,6 @@ public class FoliaScore implements Score {
 
     public void fullSend(Player player) {
         ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        objective.scoreboard.send(player, clientboundSetScorePacket);
+        ScoreboardPacket.send(player, clientboundSetScorePacket);
     }
 }
