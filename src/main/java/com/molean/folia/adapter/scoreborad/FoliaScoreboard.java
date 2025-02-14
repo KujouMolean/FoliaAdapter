@@ -3,8 +3,6 @@ package com.molean.folia.adapter.scoreborad;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -66,7 +64,7 @@ public class FoliaScoreboard implements Scoreboard {
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @NotNull String displayName) {
-        return registerNewObjective(name,criteria, Component.text(displayName));
+        return registerNewObjective(name, criteria, Component.text(displayName));
     }
 
     @Override
@@ -159,13 +157,12 @@ public class FoliaScoreboard implements Scoreboard {
     @Override
     public @NotNull Team registerNewTeam(@NotNull String name) {
         FoliaTeam foliaTeam = new FoliaTeam(this, name);
-        FoliaTeam put = teamMap.put(name, foliaTeam);
-        if (put != null) {
-            Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(put::clearFor);
+        FoliaTeam old = teamMap.get(name);
+        if (old != null) {
+            Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(old::clearFor);
         }
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            foliaTeam.fullSend(onlinePlayer);
-        }
+        teamMap.put(name, foliaTeam);
+        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(foliaTeam::fullSend);
         return foliaTeam;
     }
 
