@@ -158,7 +158,10 @@ public class FoliaScoreboard implements Scoreboard {
     @Override
     public @NotNull Team registerNewTeam(@NotNull String name) {
         FoliaTeam foliaTeam = new FoliaTeam(this, name);
-        teamMap.put(name, foliaTeam);
+        FoliaTeam put = teamMap.put(name, foliaTeam);
+        if (put != null) {
+            Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(put::clearFor);
+        }
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             foliaTeam.fullSend(onlinePlayer);
         }
@@ -240,4 +243,5 @@ public class FoliaScoreboard implements Scoreboard {
     public void broadcast(Packet<?> packet) {
         Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(player -> ScoreboardPacket.send(player, packet));
     }
+
 }

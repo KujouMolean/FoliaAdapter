@@ -12,8 +12,9 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class FoliaScoreboardManager implements Listener, ScoreboardManager {
     @Deprecated
@@ -26,7 +27,7 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
 
     private static FoliaScoreboard mainScoreboard;
 
-    private static final Set<FoliaScoreboard> scoreboards = new HashSet<>();
+    private static final Map<UUID, FoliaScoreboard> scoreboards = new HashMap<>();
 
     @Deprecated
     public FoliaScoreboard getScoreboard() {
@@ -45,26 +46,16 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
 
     @Override
     public @NotNull Scoreboard getNewScoreboard() {
-        FoliaScoreboard foliaScoreboard = new FoliaScoreboard(this);
-        scoreboards.add(foliaScoreboard);
-        return foliaScoreboard;
+        return new FoliaScoreboard(this);
     }
 
 
     public @Nullable FoliaScoreboard getPlayerScoreboard(Player player) {
-        if (mainScoreboard.viewers.contains(player.getUniqueId())) {
-            return mainScoreboard;
-        }
-        for (FoliaScoreboard value : scoreboards) {
-            if (value.viewers.contains(player.getUniqueId())) {
-                return value;
-            }
-        }
-        return null;
+        return scoreboards.get(player.getUniqueId());
     }
 
     public void setPlayerScoreboard(Player player, FoliaScoreboard foliaScoreboard) {
-        quit(player);
+        scoreboards.put(player.getUniqueId(), foliaScoreboard);
         join(player, foliaScoreboard);
     }
 
@@ -74,27 +65,22 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
         join(event.getPlayer(), mainScoreboard);
     }
 
-    public void quit(Player player) {
-        boolean b = mainScoreboard.viewers.remove(player.getUniqueId());
-        if (b) {
-            mainScoreboard.clearFor(player);
-        }
 
-        for (FoliaScoreboard value : scoreboards) {
-            boolean remove = value.viewers.remove(player.getUniqueId());
-            if (remove) {
-                value.clearFor(player);
-            }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void on(PlayerQuitEvent event) {
+        quit(event.getPlayer());
+    }
+
+    public void quit(Player player) {
+        FoliaScoreboard playerScoreboard = getPlayerScoreboard(player);
+        if (playerScoreboard != null) {
+            playerScoreboard.viewers.remove(player.getUniqueId());
+            playerScoreboard.clearFor(player);
         }
     }
 
     public void join(Player player, FoliaScoreboard foliaScoreboard) {
         foliaScoreboard.viewers.add(player.getUniqueId());
         foliaScoreboard.fullSend(player);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void on(PlayerQuitEvent event) {
-        quit(event.getPlayer());
     }
 }
