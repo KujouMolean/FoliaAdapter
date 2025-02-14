@@ -72,7 +72,7 @@ public class FoliaScore implements Score {
 
     @Override
     public boolean isTriggerable() {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     @Override

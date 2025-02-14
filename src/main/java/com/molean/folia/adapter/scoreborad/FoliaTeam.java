@@ -114,32 +114,32 @@ public class FoliaTeam implements Team {
 
     @Override
     public @NotNull String getDisplayName() {
-        throw new UnsupportedOperationException();
+        return PaperAdventure.asPlain(display, Locale.CHINA);
     }
 
     @Override
     public void setDisplayName(@NotNull String displayName) {
-        throw new UnsupportedOperationException();
+        displayName(Component.text(displayName));
     }
 
     @Override
     public @NotNull String getPrefix() {
-        throw new UnsupportedOperationException();
+        return PaperAdventure.asPlain(prefix, Locale.CHINA);
     }
 
     @Override
     public void setPrefix(@NotNull String prefix) {
-        throw new UnsupportedOperationException();
+        prefix(Component.text(prefix));
     }
 
     @Override
     public @NotNull String getSuffix() {
-        throw new UnsupportedOperationException();
+        return PaperAdventure.asPlain(suffix, Locale.CHINA);
     }
 
     @Override
     public void setSuffix(@NotNull String suffix) {
-        throw new UnsupportedOperationException();
+        suffix(Component.text(suffix));
     }
 
     @Override
@@ -180,12 +180,22 @@ public class FoliaTeam implements Team {
 
     @Override
     public @NotNull NameTagVisibility getNameTagVisibility() {
-        throw new UnsupportedOperationException();
+        return switch (getOption(Option.NAME_TAG_VISIBILITY)) {
+            case ALWAYS -> NameTagVisibility.ALWAYS;
+            case NEVER -> NameTagVisibility.NEVER;
+            case FOR_OTHER_TEAMS -> NameTagVisibility.HIDE_FOR_OTHER_TEAMS;
+            case FOR_OWN_TEAM -> NameTagVisibility.HIDE_FOR_OWN_TEAM;
+        };
     }
 
     @Override
     public void setNameTagVisibility(@NotNull NameTagVisibility visibility) {
-        throw new UnsupportedOperationException();
+      setOption(Option.NAME_TAG_VISIBILITY, switch (visibility){
+          case ALWAYS -> OptionStatus.ALWAYS;
+          case NEVER -> OptionStatus.NEVER;
+          case HIDE_FOR_OTHER_TEAMS -> OptionStatus.FOR_OTHER_TEAMS;
+          case HIDE_FOR_OWN_TEAM -> OptionStatus.FOR_OWN_TEAM;
+      });
     }
 
     @Override
@@ -210,7 +220,7 @@ public class FoliaTeam implements Team {
 
     @Override
     public void addPlayer(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        addEntry(player.getUniqueId().toString());
     }
 
     @Override
@@ -227,7 +237,7 @@ public class FoliaTeam implements Team {
 
     @Override
     public void addEntities(@NotNull Collection<Entity> entities) throws IllegalStateException, IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        addEntries(entities.stream().map(entity -> entity.getUniqueId().toString()).toList());
     }
 
 
@@ -248,7 +258,7 @@ public class FoliaTeam implements Team {
 
     @Override
     public boolean removePlayer(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        return removeEntry(player.getUniqueId().toString());
     }
 
     @Override
@@ -263,7 +273,7 @@ public class FoliaTeam implements Team {
 
     @Override
     public boolean removeEntities(@NotNull Collection<Entity> entities) throws IllegalStateException, IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return removeEntries(entities.stream().map(entity -> entity.getUniqueId().toString()).toList());
     }
 
     @Override
@@ -283,7 +293,7 @@ public class FoliaTeam implements Team {
 
     @Override
     public boolean hasPlayer(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        return hasEntry(player.getUniqueId().toString());
     }
 
     @Override
@@ -318,17 +328,17 @@ public class FoliaTeam implements Team {
 
     @Override
     public void addEntity(@NotNull Entity entity) throws IllegalStateException, IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        addEntry(entity.getUniqueId().toString());
     }
 
     @Override
     public boolean removeEntity(@NotNull Entity entity) throws IllegalStateException, IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return removeEntry(entity.getUniqueId().toString());
     }
 
     @Override
     public boolean hasEntity(@NotNull Entity entity) throws IllegalStateException, IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return hasEntry(entity.getUniqueId().toString());
     }
 
     @Override
