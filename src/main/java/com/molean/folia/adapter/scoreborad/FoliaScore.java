@@ -3,7 +3,7 @@ package com.molean.folia.adapter.scoreborad;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import io.papermc.paper.util.PaperScoreboardFormat;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
+import net.minecraft.network.protocol.Packet;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
@@ -50,8 +50,7 @@ public class FoliaScore implements Score {
     public void setScore(int score) {
         this.score = score;
         set = true;
-        ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        objective.scoreboard.broadcast(clientboundSetScorePacket);
+        objective.scoreboard.broadcast(updatePacket());
     }
 
     @Override
@@ -68,8 +67,7 @@ public class FoliaScore implements Score {
     public void resetScore() throws IllegalStateException {
         set = false;
         score = 0;
-        ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        objective.scoreboard.broadcast(clientboundSetScorePacket);
+        objective.scoreboard.broadcast(updatePacket());
     }
 
     @Override
@@ -90,8 +88,7 @@ public class FoliaScore implements Score {
     @Override
     public void customName(@Nullable Component customName) {
         this.customName = customName;
-        ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        objective.scoreboard.broadcast(clientboundSetScorePacket);
+        objective.scoreboard.broadcast(updatePacket());
     }
 
     @Override
@@ -105,7 +102,13 @@ public class FoliaScore implements Score {
     }
 
     public void fullSend(Player player) {
-        ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        ScoreboardPacket.send(player, clientboundSetScorePacket);
+        ScoreboardPacket.send(player, updatePacket());
+    }
+
+    public Packet<?> updatePacket() {
+        return ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
+    }
+    public Packet<?> removePacket() {
+        return ScoreboardPacket.removeScore(entry, objective.name);
     }
 }

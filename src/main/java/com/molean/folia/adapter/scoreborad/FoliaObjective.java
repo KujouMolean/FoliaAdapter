@@ -2,8 +2,10 @@ package com.molean.folia.adapter.scoreborad;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
+import io.papermc.paper.util.PaperScoreboardFormat;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -143,7 +145,12 @@ public class FoliaObjective implements Objective {
 
     @Override
     public @NotNull Score getScore(@NotNull String entry) {
-        return scores.getOrDefault(entry, new FoliaScore(entry, this));
+        if (!scores.containsKey(entry)) {
+            FoliaScore foliaScore = new FoliaScore(entry, this);
+            scoreboard.broadcast(foliaScore.updatePacket());
+            scores.put(entry, foliaScore);
+        }
+        return scores.get(entry);
     }
 
     @Override

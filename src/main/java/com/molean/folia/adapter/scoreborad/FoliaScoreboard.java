@@ -125,7 +125,7 @@ public class FoliaScoreboard implements Scoreboard {
     @Override
     public void resetScores(@NotNull String entry) {
         foliaObjectiveMap.values().forEach(foliaObjective -> {
-            foliaObjective.scores.remove(entry);
+            broadcast(foliaObjective.scores.remove(entry).removePacket());
         });
     }
 
