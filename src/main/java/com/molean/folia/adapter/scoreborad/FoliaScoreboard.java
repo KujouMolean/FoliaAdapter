@@ -43,12 +43,13 @@ public class FoliaScoreboard implements Scoreboard {
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @Nullable String criteria, @Nullable Component displayName, @NotNull RenderType renderType) throws IllegalArgumentException {
         FoliaObjective foliaObjective = new FoliaObjective(name, this);
-        foliaObjectiveMap.put(name, foliaObjective);
+        FoliaObjective put = foliaObjectiveMap.put(name, foliaObjective);
+        if (put != null) {
+            Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(this::clearFor);
+        }
         foliaObjective.display = displayName;
         foliaObjective.renderType = renderType;
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            foliaObjective.fullSend(onlinePlayer);
-        }
+        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(this::fullSend);
         return foliaObjective;
     }
 
