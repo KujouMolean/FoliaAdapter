@@ -45,12 +45,12 @@ public class FoliaScoreboard implements Scoreboard {
         FoliaObjective foliaObjective = new FoliaObjective(name, this);
         FoliaObjective old = foliaObjectiveMap.get(name);
         if (old != null) {
-            Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(this::clearFor);
+            Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(foliaObjective::fullSend);
         }
         foliaObjectiveMap.put(name, foliaObjective);
         foliaObjective.display = displayName;
         foliaObjective.renderType = renderType;
-        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(this::fullSend);
+        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(foliaObjective::fullSend);
         return foliaObjective;
     }
 

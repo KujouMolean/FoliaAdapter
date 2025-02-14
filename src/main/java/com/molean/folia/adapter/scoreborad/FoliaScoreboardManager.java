@@ -78,8 +78,8 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
     public void quit(Player player) {
         FoliaScoreboard playerScoreboard = getPlayerScoreboard(player);
         if (playerScoreboard != null) {
-            playerScoreboard.viewers.remove(player.getUniqueId());
             playerScoreboard.clearFor(player);
+            playerScoreboard.viewers.remove(player.getUniqueId());
         }
     }
 
