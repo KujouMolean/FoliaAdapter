@@ -340,4 +340,9 @@ public class FoliaTeam implements Team {
         ClientboundSetPlayerTeamPacket team = ScoreboardPacket.createTeam(name, parameters(), members);
         ScoreboardPacket.send(onlinePlayer, team);
     }
+
+    public void clearFor(Player player) {
+        ClientboundSetPlayerTeamPacket team = ScoreboardPacket.removeTeam(name);
+        ScoreboardPacket.send(player, team);
+    }
 }

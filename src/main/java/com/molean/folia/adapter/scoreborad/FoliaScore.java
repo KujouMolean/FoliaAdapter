@@ -50,7 +50,7 @@ public class FoliaScore implements Score {
         this.score = score;
         set = true;
         ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        ScoreboardPacket.broadcast(clientboundSetScorePacket);
+        objective.scoreboard.broadcast(clientboundSetScorePacket);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class FoliaScore implements Score {
         set = false;
         score = 0;
         ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        ScoreboardPacket.broadcast(clientboundSetScorePacket);
+        objective.scoreboard.broadcast(clientboundSetScorePacket);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class FoliaScore implements Score {
     public void customName(@Nullable Component customName) {
         this.customName = customName;
         ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        ScoreboardPacket.broadcast(clientboundSetScorePacket);
+        objective.scoreboard.broadcast(clientboundSetScorePacket);
     }
 
     @Override
@@ -105,6 +105,6 @@ public class FoliaScore implements Score {
 
     public void fullSend(Player player) {
         ClientboundSetScorePacket clientboundSetScorePacket = ScoreboardPacket.updateScore(entry, objective.name, customName, score, PaperScoreboardFormat.asVanilla(numberFormat));
-        ScoreboardPacket.send(player, clientboundSetScorePacket);
+        objective.scoreboard.send(player, clientboundSetScorePacket);
     }
 }

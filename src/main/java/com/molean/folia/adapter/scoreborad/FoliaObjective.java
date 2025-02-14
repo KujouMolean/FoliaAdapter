@@ -51,7 +51,7 @@ public class FoliaObjective implements Objective {
     public void displayName(@Nullable Component displayName) {
         this.display = displayName;
         ClientboundSetObjectivePacket clientboundSetObjectivePacket = ScoreboardPacket.updateObjective(name, displayName, renderType());
-        ScoreboardPacket.broadcast(clientboundSetObjectivePacket);
+        scoreboard.broadcast(clientboundSetObjectivePacket);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FoliaObjective implements Objective {
     public void setDisplaySlot(@Nullable DisplaySlot slot) {
         scoreboard.displaySlotFoliaObjectiveMap.put(slot, this);
         this.displaySlot = slot;
-        ScoreboardPacket.broadcast(ScoreboardPacket.setDisplaySlot(name, displaySlot));
+        scoreboard.broadcast(ScoreboardPacket.setDisplaySlot(name, displaySlot));
     }
 
     @Override
@@ -105,7 +105,7 @@ public class FoliaObjective implements Objective {
     public void setRenderType(@NotNull RenderType renderType) {
         this.renderType = renderType;
         ClientboundSetObjectivePacket clientboundSetObjectivePacket = ScoreboardPacket.updateObjective(name, display, renderType());
-        ScoreboardPacket.broadcast(clientboundSetObjectivePacket);
+        scoreboard.broadcast(clientboundSetObjectivePacket);
     }
 
     @Override
@@ -155,5 +155,10 @@ public class FoliaObjective implements Objective {
         scores.forEach((s, foliaScore) -> {
             foliaScore.fullSend(player);
         });
+    }
+
+    public void clearFor(Player player) {
+        ClientboundSetObjectivePacket objective = ScoreboardPacket.removeObjective(name);
+        ScoreboardPacket.send(player, objective);
     }
 }

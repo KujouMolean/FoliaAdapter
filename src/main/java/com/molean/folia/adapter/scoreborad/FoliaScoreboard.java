@@ -1,6 +1,7 @@
 package com.molean.folia.adapter.scoreborad;
 
 import net.kyori.adventure.text.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
@@ -12,16 +13,20 @@ import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FoliaScoreboard implements Scoreboard {
 
-     final Map<String, FoliaObjective> foliaObjectiveMap = new HashMap<>();
-     final Map<DisplaySlot, FoliaObjective> displaySlotFoliaObjectiveMap = new HashMap<>();
-     final Map<String, FoliaTeam> teamMap = new HashMap<>();
+    final Map<String, FoliaObjective> foliaObjectiveMap = new HashMap<>();
+    final Map<DisplaySlot, FoliaObjective> displaySlotFoliaObjectiveMap = new HashMap<>();
+    final Map<String, FoliaTeam> teamMap = new HashMap<>();
+    final FoliaScoreboardManager manager;
+    final List<UUID> viewers = new ArrayList<>();
+
+
+    public FoliaScoreboard(FoliaScoreboardManager manager) {
+        this.manager = manager;
+    }
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull String criteria) {
@@ -169,7 +174,7 @@ public class FoliaScoreboard implements Scoreboard {
     @Override
     public void clearSlot(@NotNull DisplaySlot slot) {
         ClientboundSetDisplayObjectivePacket clientboundSetDisplayObjectivePacket = ScoreboardPacket.setDisplaySlot("", slot);
-        ScoreboardPacket.broadcast(clientboundSetDisplayObjectivePacket);
+        broadcast(clientboundSetDisplayObjectivePacket);
         FoliaObjective remove = displaySlotFoliaObjectiveMap.remove(slot);
         remove.displaySlot = null;
     }
@@ -203,15 +208,28 @@ public class FoliaScoreboard implements Scoreboard {
 
     }
 
+    public void clearFor(Player player) {
+        for (FoliaTeam value : teamMap.values()) {
+            value.clearFor(player);
+        }
+        for (FoliaObjective value : foliaObjectiveMap.values()) {
+            value.clearFor(player);
+        }
+    }
+
     public void removeTeam(FoliaTeam foliaTeam) {
         teamMap.remove(foliaTeam.name);
         ClientboundSetPlayerTeamPacket clientboundSetPlayerTeamPacket = ScoreboardPacket.removeTeam(foliaTeam.name);
-        ScoreboardPacket.broadcast(clientboundSetPlayerTeamPacket);
+        broadcast(clientboundSetPlayerTeamPacket);
     }
 
     public void removeObjective(FoliaObjective foliaObjective) {
         foliaObjectiveMap.remove(foliaObjective.name);
         ClientboundSetObjectivePacket clientboundSetObjectivePacket = ScoreboardPacket.removeObjective(foliaObjective.name);
-        ScoreboardPacket.broadcast(clientboundSetObjectivePacket);
+        broadcast(clientboundSetObjectivePacket);
+    }
+
+    public void broadcast(Packet<?> packet) {
+        Bukkit.getOnlinePlayers().stream().filter(player -> viewers.contains(player.getUniqueId())).forEach(player -> ScoreboardPacket.send(player, packet));
     }
 }
