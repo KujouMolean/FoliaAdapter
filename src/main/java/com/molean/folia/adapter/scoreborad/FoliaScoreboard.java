@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FoliaScoreboard implements Scoreboard {
 
@@ -34,13 +35,13 @@ public class FoliaScoreboard implements Scoreboard {
     }
 
     @Override
-    public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @Nullable Component displayName) {
+    public @NotNull Objective registerNewObjective(@NotNull String name, @Nullable String criteria, @Nullable Component displayName) {
         return registerNewObjective(name, criteria, displayName, RenderType.INTEGER);
 
     }
 
     @Override
-    public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @Nullable Component displayName, @NotNull RenderType renderType) throws IllegalArgumentException {
+    public @NotNull Objective registerNewObjective(@NotNull String name, @Nullable String criteria, @Nullable Component displayName, @NotNull RenderType renderType) throws IllegalArgumentException {
         FoliaObjective foliaObjective = new FoliaObjective(name, this);
         foliaObjectiveMap.put(name, foliaObjective);
         foliaObjective.display = displayName;
@@ -53,32 +54,32 @@ public class FoliaScoreboard implements Scoreboard {
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @Nullable Component displayName) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return registerNewObjective(name, criteria.getName(), displayName);
     }
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @Nullable Component displayName, @NotNull RenderType renderType) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return registerNewObjective(name, criteria.getName(), displayName, renderType);
     }
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @NotNull String displayName) {
-        throw new UnsupportedOperationException();
+        return registerNewObjective(name,criteria, Component.text(displayName));
     }
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull String criteria, @NotNull String displayName, @NotNull RenderType renderType) {
-        throw new UnsupportedOperationException();
+        return registerNewObjective(name, criteria, Component.text(displayName));
     }
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @NotNull String displayName) {
-        throw new UnsupportedOperationException();
+        return registerNewObjective(name, criteria, Component.text(displayName));
     }
 
     @Override
     public @NotNull Objective registerNewObjective(@NotNull String name, @NotNull Criteria criteria, @NotNull String displayName, @NotNull RenderType renderType) {
-        throw new UnsupportedOperationException();
+        return registerNewObjective(name, criteria, Component.text(displayName), renderType);
     }
 
     @Override
@@ -88,17 +89,17 @@ public class FoliaScoreboard implements Scoreboard {
 
     @Override
     public @NotNull Set<Objective> getObjectivesByCriteria(@NotNull String criteria) {
-        throw new UnsupportedOperationException();
+        return foliaObjectiveMap.values().stream().filter(foliaObjective -> Objects.equals(criteria, foliaObjective.getCriteria())).collect(Collectors.toSet());
     }
 
     @Override
     public @NotNull Set<Objective> getObjectivesByCriteria(@NotNull Criteria criteria) {
-        throw new UnsupportedOperationException();
+        return getObjectivesByCriteria(criteria.getName());
     }
 
     @Override
     public @NotNull Set<Objective> getObjectives() {
-        throw new UnsupportedOperationException();
+        return new HashSet<>(foliaObjectiveMap.values());
     }
 
     @Override
@@ -108,27 +109,29 @@ public class FoliaScoreboard implements Scoreboard {
 
     @Override
     public @NotNull Set<Score> getScores(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        return getScores(Objects.requireNonNull(player.getUniqueId().toString()));
     }
 
     @Override
     public @NotNull Set<Score> getScores(@NotNull String entry) {
-        throw new UnsupportedOperationException();
+        return foliaObjectiveMap.values().stream().map(foliaObjective -> foliaObjective.getScore(entry)).collect(Collectors.toSet());
     }
 
     @Override
     public void resetScores(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        resetScores(player.getUniqueId().toString());
     }
 
     @Override
     public void resetScores(@NotNull String entry) {
-        throw new UnsupportedOperationException();
+        foliaObjectiveMap.values().forEach(foliaObjective -> {
+            foliaObjective.scores.remove(entry);
+        });
     }
 
     @Override
     public @Nullable Team getPlayerTeam(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        return getEntryTeam(Objects.requireNonNull(player.getUniqueId()).toString());
     }
 
     @Override
@@ -168,7 +171,11 @@ public class FoliaScoreboard implements Scoreboard {
 
     @Override
     public @NotNull Set<String> getEntries() {
-        throw new UnsupportedOperationException();
+        ArrayList<String> strings = new ArrayList<>();
+        for (FoliaObjective value : foliaObjectiveMap.values()) {
+            strings.addAll(new HashSet<>(value.scores.keySet()));
+        }
+        return new HashSet<>(strings);
     }
 
     @Override
@@ -181,17 +188,17 @@ public class FoliaScoreboard implements Scoreboard {
 
     @Override
     public @NotNull Set<Score> getScoresFor(@NotNull Entity entity) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return getScores(entity.getUniqueId().toString());
     }
 
     @Override
     public void resetScoresFor(@NotNull Entity entity) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        resetScores(entity.getUniqueId().toString());
     }
 
     @Override
     public @Nullable Team getEntityTeam(@NotNull Entity entity) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
+        return getEntryTeam(entity.getUniqueId().toString());
     }
 
     public void fullSend(Player player) {

@@ -7,13 +7,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
-public class FoliaScoreboardManager implements Listener {
+public class FoliaScoreboardManager implements Listener, ScoreboardManager {
     @Deprecated
     public FoliaScoreboardManager(JavaPlugin plugin) {
     }
@@ -24,7 +26,7 @@ public class FoliaScoreboardManager implements Listener {
 
     private static FoliaScoreboard mainScoreboard;
 
-    private static final Map<String, FoliaScoreboard> scoreboardMap = new HashMap<>();
+    private static final Set<FoliaScoreboard> scoreboards = new HashSet<>();
 
     @Deprecated
     public FoliaScoreboard getScoreboard() {
@@ -41,15 +43,19 @@ public class FoliaScoreboardManager implements Listener {
         return mainScoreboard;
     }
 
-    public @NotNull FoliaScoreboard getOrCreateScoreboard(String name) {
-        return scoreboardMap.computeIfAbsent(name, s -> new FoliaScoreboard(this));
+    @Override
+    public @NotNull Scoreboard getNewScoreboard() {
+        FoliaScoreboard foliaScoreboard = new FoliaScoreboard(this);
+        scoreboards.add(foliaScoreboard);
+        return foliaScoreboard;
     }
+
 
     public @Nullable FoliaScoreboard getPlayerScoreboard(Player player) {
         if (mainScoreboard.viewers.contains(player.getUniqueId())) {
             return mainScoreboard;
         }
-        for (FoliaScoreboard value : scoreboardMap.values()) {
+        for (FoliaScoreboard value : scoreboards) {
             if (value.viewers.contains(player.getUniqueId())) {
                 return value;
             }
@@ -74,7 +80,7 @@ public class FoliaScoreboardManager implements Listener {
             mainScoreboard.clearFor(player);
         }
 
-        for (FoliaScoreboard value : scoreboardMap.values()) {
+        for (FoliaScoreboard value : scoreboards) {
             boolean remove = value.viewers.remove(player.getUniqueId());
             if (remove) {
                 value.clearFor(player);

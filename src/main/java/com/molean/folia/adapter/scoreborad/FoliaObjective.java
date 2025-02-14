@@ -1,5 +1,6 @@
 package com.molean.folia.adapter.scoreborad;
 
+import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
@@ -12,7 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class FoliaObjective implements Objective {
 
@@ -20,6 +23,7 @@ public class FoliaObjective implements Objective {
     FoliaScoreboard scoreboard;
     Component display;
     DisplaySlot displaySlot;
+    String criteria;
     RenderType renderType;
     Map<String, FoliaScore> scores = new HashMap<>();
     NumberFormat numberFormat;
@@ -28,6 +32,10 @@ public class FoliaObjective implements Objective {
     public FoliaObjective(String name, FoliaScoreboard scoreboard) {
         this.name = name;
         this.scoreboard = scoreboard;
+    }
+
+    public void setCriteria(String criteria) {
+        this.criteria = criteria;
     }
 
     @Override
@@ -56,27 +64,42 @@ public class FoliaObjective implements Objective {
 
     @Override
     public @NotNull String getDisplayName() {
-        throw new UnsupportedOperationException();
+        return PaperAdventure.asPlain(display, Locale.CHINA);
     }
 
     @Override
     public void setDisplayName(@NotNull String displayName) {
-        throw new UnsupportedOperationException();
+        displayName(Component.text(displayName));
     }
 
     @Override
     public @NotNull String getCriteria() {
-        throw new UnsupportedOperationException();
+        return criteria;
     }
 
     @Override
     public @NotNull Criteria getTrackedCriteria() {
-        throw new UnsupportedOperationException();
+        return new Criteria() {
+            @Override
+            public @NotNull String getName() {
+                return getCriteria();
+            }
+
+            @Override
+            public boolean isReadOnly() {
+                return true;
+            }
+
+            @Override
+            public @NotNull RenderType getDefaultRenderType() {
+                return RenderType.INTEGER;
+            }
+        };
     }
 
     @Override
     public boolean isModifiable() {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     @Override
@@ -115,27 +138,27 @@ public class FoliaObjective implements Objective {
 
     @Override
     public @NotNull Score getScore(@NotNull OfflinePlayer player) {
-        throw new UnsupportedOperationException();
+        return getScore(Objects.requireNonNull(player.getUniqueId().toString()));
     }
 
     @Override
     public @NotNull Score getScore(@NotNull String entry) {
-        return scores.get(entry);
+        return scores.getOrDefault(entry, new FoliaScore(entry, this));
     }
 
     @Override
     public @NotNull Score getScoreFor(@NotNull Entity entity) throws IllegalArgumentException, IllegalStateException {
-        throw new UnsupportedOperationException();
+        return getScore(entity.getUniqueId().toString());
     }
 
     @Override
     public boolean willAutoUpdateDisplay() {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     @Override
     public void setAutoUpdateDisplay(boolean autoUpdateDisplay) {
-        throw new UnsupportedOperationException();
+
     }
 
     @Override
