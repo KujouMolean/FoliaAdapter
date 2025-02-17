@@ -1,9 +1,11 @@
 package com.molean.folia.adapter;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.Pair;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
 
 public class SchedulerContext {
 
@@ -20,6 +22,21 @@ public class SchedulerContext {
         @Override
         public Pair<Entity, Location> toPair() {
             return Pair.of(entity, null);
+        }
+
+        @Override
+        public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
+            return Folia.getScheduler().runTask(plugin, entity, runnable);
+        }
+
+        @Override
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, int delay) {
+            return Folia.getScheduler().runTaskLater(plugin, entity, runnable,delay);
+        }
+
+        @Override
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, int delay, int period) {
+            return Folia.getScheduler().runTaskTimer(plugin, runnable, entity, delay, period);
         }
     }
 
@@ -52,9 +69,28 @@ public class SchedulerContext {
             this.chunkZ = location.getBlockZ() >> 4;
         }
 
+        public Location location() {
+            return new Location(world, chunkX << 4, 0, chunkZ << 4);
+        }
+
         @Override
         public Pair<Entity, Location> toPair() {
-            return Pair.of(null, new Location(world, chunkX << 4, 0, chunkZ << 4));
+            return Pair.of(null, location());
+        }
+
+        @Override
+        public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
+            return Folia.getScheduler().runTask(plugin, location(), runnable);
+        }
+
+        @Override
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, int delay) {
+            return Folia.getScheduler().runTaskLater(plugin, location(), runnable,delay);
+        }
+
+        @Override
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, int delay, int period) {
+            return Folia.getScheduler().runTaskTimer(plugin, runnable, location(), delay, period);
         }
     }
 
@@ -71,6 +107,18 @@ public class SchedulerContext {
 
     public Pair<Entity, Location> toPair() {
         return Pair.of(null, null);
+    }
+
+    public ScheduledTask runTask(Plugin plugin,Runnable runnable) {
+        throw new RuntimeException("Context not enough");
+    }
+
+    public ScheduledTask runTaskLater(Plugin plugin,Runnable runnable, int delay) {
+        throw new RuntimeException("Context not enough");
+    }
+
+    public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, int delay, int period) {
+        throw new RuntimeException("Context not enough");
     }
 
 }
