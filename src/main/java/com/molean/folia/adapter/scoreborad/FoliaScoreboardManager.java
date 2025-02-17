@@ -31,10 +31,7 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
 
     @Deprecated
     public FoliaScoreboard getScoreboard() {
-        if (mainScoreboard == null) {
-            mainScoreboard = new FoliaScoreboard(this);
-        }
-        return mainScoreboard;
+        return getMainScoreboard();
     }
 
     public @NotNull FoliaScoreboard getMainScoreboard() {
@@ -66,7 +63,7 @@ public class FoliaScoreboardManager implements Listener, ScoreboardManager {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void on(PlayerJoinEvent event) {
-        join(event.getPlayer(), mainScoreboard);
+        join(event.getPlayer(), getMainScoreboard());
     }
 
 
