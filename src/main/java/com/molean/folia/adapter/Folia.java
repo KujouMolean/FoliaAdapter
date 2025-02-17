@@ -100,7 +100,7 @@ public class Folia {
                     .runAtFixedRate(
                             plugin,
                             scheduledTask -> runnable.run(),
-                            delay, period
+                            Math.max(1, delay), Math.max(1, period)
                     );
         }
 
@@ -220,7 +220,7 @@ public class Folia {
                 FoliaAdapter.getPlugin().getLogger().warning(plugin.getName() + " try to register a schedule while disabled, ignore.");
                 return null;
             }
-            return Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> runnable.run(), delay);
+            return Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> runnable.run(), Math.max(1, delay));
         }
 
 
