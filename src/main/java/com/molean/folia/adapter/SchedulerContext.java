@@ -9,6 +9,51 @@ import org.bukkit.plugin.Plugin;
 
 public class SchedulerContext {
 
+    public static final class AsyncContext extends SchedulerContext {
+        @Override
+        public Pair<Entity, Location> toPair() {
+            return super.toPair();
+        }
+
+        @Override
+        public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
+            return Folia.getScheduler().runTaskAsynchronously(plugin, runnable);
+        }
+
+        @Override
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
+            return Folia.getScheduler().runTaskLaterAsync(plugin, runnable, delay);
+        }
+
+        @Override
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
+            return Folia.getScheduler().runTaskTimerAsynchronously(plugin, runnable, delay, period);
+        }
+    }
+
+
+    public static final class GlobalContext extends SchedulerContext {
+        @Override
+        public Pair<Entity, Location> toPair() {
+            return super.toPair();
+        }
+
+        @Override
+        public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
+            return Folia.getScheduler().runTaskGlobally(plugin, runnable);
+        }
+
+        @Override
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
+            return Folia.getScheduler().runTaskLaterGlobally(plugin, runnable, delay);
+        }
+
+        @Override
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
+            return Folia.getScheduler().runTaskTimerGlobally(plugin, runnable, delay, period);
+        }
+    }
+
     public static final class EntitySchedulerContext extends SchedulerContext {
         private final Entity entity;
 
@@ -30,12 +75,12 @@ public class SchedulerContext {
         }
 
         @Override
-        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, int delay) {
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
             return Folia.getScheduler().runTaskLater(plugin, entity, runnable,delay);
         }
 
         @Override
-        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, int delay, int period) {
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
             return Folia.getScheduler().runTaskTimer(plugin, runnable, entity, delay, period);
         }
     }
@@ -84,12 +129,12 @@ public class SchedulerContext {
         }
 
         @Override
-        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, int delay) {
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
             return Folia.getScheduler().runTaskLater(plugin, location(), runnable,delay);
         }
 
         @Override
-        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, int delay, int period) {
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
             return Folia.getScheduler().runTaskTimer(plugin, runnable, location(), delay, period);
         }
     }
@@ -104,6 +149,12 @@ public class SchedulerContext {
     public static SchedulerContext of(Entity entity) {
         return new EntitySchedulerContext(entity);
     }
+    public static SchedulerContext ofGlobal() {
+        return new GlobalContext();
+    }
+    public static SchedulerContext ofAsync() {
+        return new AsyncContext();
+    }
 
     public Pair<Entity, Location> toPair() {
         return Pair.of(null, null);
@@ -113,11 +164,11 @@ public class SchedulerContext {
         throw new RuntimeException("Context not enough");
     }
 
-    public ScheduledTask runTaskLater(Plugin plugin,Runnable runnable, int delay) {
+    public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
         throw new RuntimeException("Context not enough");
     }
 
-    public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, int delay, int period) {
+    public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
         throw new RuntimeException("Context not enough");
     }
 
