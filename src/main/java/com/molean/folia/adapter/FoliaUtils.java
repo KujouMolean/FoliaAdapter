@@ -5,11 +5,13 @@ import io.papermc.paper.threadedregions.TickRegionScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.util.CraftLocation;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +51,11 @@ public class FoliaUtils {
         } else {
             return CompletableFuture.completedFuture(null);
         }
+    }
+
+    public void cancelTasks(Plugin plugin) {
+        Bukkit.getAsyncScheduler().cancelTasks(plugin);
+        Bukkit.getGlobalRegionScheduler().cancelTasks(plugin);
     }
 
 }
