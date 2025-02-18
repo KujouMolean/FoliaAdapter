@@ -1,12 +1,17 @@
 package com.molean.folia.adapter;
 
+import ca.spottedleaf.moonrise.common.util.TickThread;
 import com.google.common.collect.Iterables;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
+import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.util.CraftLocation;
 import org.bukkit.entity.Entity;
@@ -53,9 +58,21 @@ public class FoliaUtils {
         }
     }
 
-    public void cancelTasks(Plugin plugin) {
+    public static void cancelTasks(Plugin plugin) {
         Bukkit.getAsyncScheduler().cancelTasks(plugin);
         Bukkit.getGlobalRegionScheduler().cancelTasks(plugin);
+    }
+
+    public static boolean isTickThreadFor(Entity entity) {
+        return TickThread.isTickThreadFor(((CraftEntity) entity).getHandleRaw());
+    }
+
+    public static boolean isTickThreadFor(Block block) {
+        return TickThread.isTickThreadFor(((CraftWorld)block.getWorld()).getHandle(),CraftLocation.toBlockPosition(block.getLocation()));
+    }
+
+    public static boolean isTickThread() {
+        return TickThread.isTickThread();
     }
 
 }
