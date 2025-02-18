@@ -104,7 +104,12 @@ public class Folia {
                     );
         }
 
+        @Deprecated(forRemoval = true)
         public @NotNull ScheduledTask runTaskLaterAsync(Plugin plugin, Runnable runnable, long delay) {
+            return runTaskLaterAsynchronously(plugin, runnable, delay);
+        }
+
+        public @NotNull ScheduledTask runTaskLaterAsynchronously(Plugin plugin, Runnable runnable, long delay) {
             if (!plugin.isEnabled()) {
                 FoliaAdapter.getPlugin().getLogger().warning(plugin.getName() + " try to register a schedule while disabled, ignore.");
                 return null;
@@ -178,6 +183,7 @@ public class Folia {
             }
             return Bukkit.getRegionScheduler().run(plugin, location, scheduledTask -> runnable.run());
         }
+
         public <T> Future<T> callSyncMethod(Plugin plugin, Callable<T> callable, Pair<Entity, Location> right) {
             if (!plugin.isEnabled()) {
                 FoliaAdapter.getPlugin().getLogger().warning(plugin.getName() + " try to register a schedule while disabled, ignore.");
@@ -278,7 +284,7 @@ public class Folia {
         return getScheduler().runTaskGlobally(FoliaAdapter.getPlugin(), runnable);
     }
 
-    public static ScheduledTask runGlobally(Runnable runnable,int delay) {
+    public static ScheduledTask runGlobally(Runnable runnable, int delay) {
         return getScheduler().runTaskLaterGlobally(FoliaAdapter.getPlugin(), runnable, delay);
     }
 
@@ -328,11 +334,11 @@ public class Folia {
                             !Class.forName("ca.spottedleaf.moonrise.common.util.TickThread")
                                     .isAssignableFrom(Thread.currentThread().getClass()));
                 } catch (NoSuchFieldException
-                        | IllegalAccessException
-                        | ClassNotFoundException
-                        | InstantiationException
-                        | NoSuchMethodException
-                        | InvocationTargetException ignored) {
+                         | IllegalAccessException
+                         | ClassNotFoundException
+                         | InstantiationException
+                         | NoSuchMethodException
+                         | InvocationTargetException ignored) {
                     // paper
                     paper = true;
                     return;

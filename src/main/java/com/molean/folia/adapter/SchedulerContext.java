@@ -22,7 +22,7 @@ public class SchedulerContext {
 
         @Override
         public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
-            return Folia.getScheduler().runTaskLaterAsync(plugin, runnable, delay);
+            return Folia.getScheduler().runTaskLaterAsynchronously(plugin, runnable, delay);
         }
 
         @Override

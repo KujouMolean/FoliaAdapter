@@ -8,7 +8,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class FoliaRunnable {
+public abstract class FoliaRunnable implements Runnable {
+
     private ScheduledTask scheduledTask;
 
     public ScheduledTask runTaskTimerAsynchronously(Plugin plugin, long delay, long period) {
@@ -24,13 +25,19 @@ public abstract class FoliaRunnable {
     public ScheduledTask runTask(Plugin plugin,Entity entity) {
         return scheduledTask = Folia.getScheduler().runTask(plugin, entity, this::run);
     }
-    
 
     public ScheduledTask runTask(Plugin plugin,Location location) {
         return scheduledTask = Folia.getScheduler().runTask(plugin, location, this::run);
     }
     public ScheduledTask runTaskGlobally(Plugin plugin) {
         return scheduledTask = Folia.getScheduler().runTaskGlobally(plugin, this::run);
+    }
+    public ScheduledTask runTaskLaterGlobally(Plugin plugin,long delay) {
+        return scheduledTask = Folia.getScheduler().runTaskLaterGlobally(plugin, this::run, delay);
+    }
+
+    public ScheduledTask runTaskTimerGlobally(Plugin plugin,long delay,long period) {
+        return scheduledTask = Folia.getScheduler().runTaskTimerGlobally(plugin, this::run, delay, period);
     }
 
     public ScheduledTask runTaskAsynchronously(Plugin plugin) {
@@ -62,6 +69,7 @@ public abstract class FoliaRunnable {
                 entity.getScheduler().runDelayed(plugin, scheduledTask1 -> run(), null, Math.max(1, delay));
     }
 
+    @Override
     public abstract void run();
 
     public void cancel() {
