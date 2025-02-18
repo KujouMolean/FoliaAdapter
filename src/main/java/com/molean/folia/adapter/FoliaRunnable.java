@@ -23,21 +23,21 @@ public abstract class FoliaRunnable implements Runnable {
     }
 
     public ScheduledTask runTask(Plugin plugin,Entity entity) {
-        return scheduledTask = Folia.getScheduler().runTask(plugin, entity, this::run);
+        return scheduledTask = Folia.getScheduler().runTask(plugin, entity, this);
     }
 
     public ScheduledTask runTask(Plugin plugin,Location location) {
-        return scheduledTask = Folia.getScheduler().runTask(plugin, location, this::run);
+        return scheduledTask = Folia.getScheduler().runTask(plugin, location, this);
     }
     public ScheduledTask runTaskGlobally(Plugin plugin) {
-        return scheduledTask = Folia.getScheduler().runTaskGlobally(plugin, this::run);
+        return scheduledTask = Folia.getScheduler().runTaskGlobally(plugin, this);
     }
     public ScheduledTask runTaskLaterGlobally(Plugin plugin,long delay) {
-        return scheduledTask = Folia.getScheduler().runTaskLaterGlobally(plugin, this::run, delay);
+        return scheduledTask = Folia.getScheduler().runTaskLaterGlobally(plugin, this, delay);
     }
 
     public ScheduledTask runTaskTimerGlobally(Plugin plugin,long delay,long period) {
-        return scheduledTask = Folia.getScheduler().runTaskTimerGlobally(plugin, this::run, delay, period);
+        return scheduledTask = Folia.getScheduler().runTaskTimerGlobally(plugin, this, delay, period);
     }
 
     public ScheduledTask runTaskAsynchronously(Plugin plugin) {
