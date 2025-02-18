@@ -1,6 +1,7 @@
 package com.molean.folia.adapter;
 
 import ca.spottedleaf.moonrise.common.util.TickThread;
+import ca.spottedleaf.moonrise.patches.entity_tracker.EntityTrackerTrackedEntity;
 import com.google.common.collect.Iterables;
 import io.papermc.paper.threadedregions.TickRegionScheduler;
 import net.minecraft.BlockUtil;
@@ -68,11 +69,14 @@ public class FoliaUtils {
     }
 
     public static boolean isTickThreadFor(Block block) {
-        return TickThread.isTickThreadFor(((CraftWorld)block.getWorld()).getHandle(),CraftLocation.toBlockPosition(block.getLocation()));
+        return isTickThreadFor(block.getLocation());
+    }
+
+    public static boolean isTickThreadFor(Location location) {
+        return TickThread.isTickThreadFor(((CraftWorld)location.getWorld()).getHandle(),CraftLocation.toBlockPosition(location));
     }
 
     public static boolean isTickThread() {
         return TickThread.isTickThread();
     }
-
 }
