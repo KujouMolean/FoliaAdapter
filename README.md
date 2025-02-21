@@ -11,7 +11,8 @@ Currently only for Paper and Folia 1.21+
 * dummy scoreborad api
 * folia scheduler
 * folia event call bypass thread check
-* scheduler context (powerful tool for migrating complex large plugins)
+* scheduler context (powerful tool for migrating complex large plugins, )
+* Folia block/entity batch task
 * folia tools (provide some nms function, especially useful for maven project without paperweight)
 
 Cooperating with [FoliaNeeds](https://github.com/KujouMolean/FoliaNeeds) is better.
