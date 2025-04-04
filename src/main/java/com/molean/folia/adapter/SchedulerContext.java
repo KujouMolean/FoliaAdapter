@@ -54,6 +54,25 @@ public class SchedulerContext {
         }
     }
 
+    public static final class AsyncDaemonSchedulerContext extends SchedulerContext {
+
+        @Override
+        public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
+            return FoliaAdapter.getAsyncDaemonTaskExecutor().registerTask(runnable);
+        }
+
+        @Override
+        public ScheduledTask runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+
     public static final class EntitySchedulerContext extends SchedulerContext {
         private final Entity entity;
 
@@ -64,6 +83,7 @@ public class SchedulerContext {
         public Entity getEntity() {
             return entity;
         }
+
         @Override
         public Pair<Entity, Location> toPair() {
             return Pair.of(entity, null);
@@ -76,7 +96,7 @@ public class SchedulerContext {
 
         @Override
         public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
-            return Folia.getScheduler().runTaskLater(plugin, entity, runnable,delay);
+            return Folia.getScheduler().runTaskLater(plugin, entity, runnable, delay);
         }
 
         @Override
@@ -108,6 +128,7 @@ public class SchedulerContext {
             this.chunkX = chunkX;
             this.chunkZ = chunkZ;
         }
+
         public LocationSchedulerContext(Location location) {
             this.world = location.getWorld();
             this.chunkX = location.getBlockX() >> 4;
@@ -130,7 +151,7 @@ public class SchedulerContext {
 
         @Override
         public ScheduledTask runTaskLater(Plugin plugin, Runnable runnable, long delay) {
-            return Folia.getScheduler().runTaskLater(plugin, location(), runnable,delay);
+            return Folia.getScheduler().runTaskLater(plugin, location(), runnable, delay);
         }
 
         @Override
@@ -149,18 +170,37 @@ public class SchedulerContext {
     public static SchedulerContext of(Entity entity) {
         return new EntitySchedulerContext(entity);
     }
+
+    private static  GlobalContext globalContext;
+    private static AsyncContext asyncContext;
+    private static AsyncDaemonSchedulerContext daemonSchedulerContext;
+
     public static SchedulerContext ofGlobal() {
-        return new GlobalContext();
+        if (globalContext == null) {
+            globalContext = new GlobalContext();
+        }
+        return globalContext;
     }
+
+    public static SchedulerContext ofDaemon() {
+        if (daemonSchedulerContext == null) {
+            daemonSchedulerContext = new AsyncDaemonSchedulerContext();
+        }
+        return daemonSchedulerContext;
+    }
+
     public static SchedulerContext ofAsync() {
-        return new AsyncContext();
+        if (asyncContext == null) {
+            asyncContext = new AsyncContext();
+        }
+        return asyncContext;
     }
 
     public Pair<Entity, Location> toPair() {
         return Pair.of(null, null);
     }
 
-    public ScheduledTask runTask(Plugin plugin,Runnable runnable) {
+    public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
         throw new RuntimeException("Context not enough");
     }
 
