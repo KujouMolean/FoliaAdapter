@@ -56,9 +56,15 @@ public class SchedulerContext {
 
     public static final class AsyncDaemonSchedulerContext extends SchedulerContext {
 
+        private final Location location;
+
+        public AsyncDaemonSchedulerContext(Location location) {
+            this.location = location;
+        }
+
         @Override
         public ScheduledTask runTask(Plugin plugin, Runnable runnable) {
-            return FoliaAdapter.getAsyncDaemonTaskExecutor().registerTask(runnable);
+            return FoliaAdapter.getAsyncDaemonTaskExecutor().registerTask(runnable, location);
         }
 
         @Override
@@ -182,9 +188,9 @@ public class SchedulerContext {
         return globalContext;
     }
 
-    public static SchedulerContext ofDaemon() {
+    public static SchedulerContext ofDaemon(Location location) {
         if (daemonSchedulerContext == null) {
-            daemonSchedulerContext = new AsyncDaemonSchedulerContext();
+            daemonSchedulerContext = new AsyncDaemonSchedulerContext(location);
         }
         return daemonSchedulerContext;
     }

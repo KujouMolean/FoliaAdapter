@@ -1,7 +1,7 @@
 plugins {
     id("java")
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT"
 }
 
 group = "com.molean"
@@ -9,11 +9,9 @@ version = "1.0-SNAPSHOT"
 //paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 repositories {
-    mavenCentral()
-    maven {
-        url = uri("https://maven.moliatopia.icu/repository/maven-snapshots/")
-    }
-    maven("https://repo.papermc.io/repository/maven-public/")
+    mavenLocal()
+//    mavenCentral()
+//    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
