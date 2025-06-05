@@ -10,6 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class FoliaRunnable implements Runnable {
 
+    public ScheduledTask getScheduledTask() {
+        return scheduledTask;
+    }
+
     private ScheduledTask scheduledTask;
 
     public ScheduledTask runTaskTimerAsynchronously(Plugin plugin, long delay, long period) {
